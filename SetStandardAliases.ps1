@@ -1,0 +1,1 @@
+﻿Set-Alias -Name applog -Value Get-IhiLogFilePath -Scope Global

@@ -1,0 +1,1 @@
+#Remove-ItemProperty -Path HKLM:"\SYSTEM\CurrentControlSet\Control\Keyboard Layout\" -Name "Scancode Map"

@@ -1,0 +1,63 @@
+<Tips>
+  <!-- Tip: want to put a newline in your Tip?  Put in the text NEWLINE -->
+  <Tip>Want another tip? Type: tip</Tip>
+  <Tip>Want ALL tips? Type: tip -All</Tip>
+  <Tip>Edit your profile, type: t $profile</Tip>
+  <Tip>Want to change the IE home page so it's not RNET ? Put this in your $profile:NEWLINESet-IHIIEHomePage "[url]"</Tip>
+  <Tip>See all special IHI functions, type: ihifunctions</Tip>
+  <Tip>Is Senthil Approved? Type: isa</Tip>
+  <Tip>See help for any command, type: Get-Help [command] -full</Tip>
+  <Tip>See ALL commands defined in memory, type: Get-Command</Tip>
+  <Tip>Decrypt an IHI password, type: Convert-IHIDecryptPassword [encrypted value]</Tip>
+  <Tip>Open the releases folder in Explorer, type: rel</Tip>
+  <Tip>Need to encode or decode HTML? Use these: Convert-IHIHtmlDecode, Convert-IHIHtmlEncode, Convert-IHIUrlDecode, Convert-IHIUrlEncode</Tip>
+  <Tip>Want the XML content in your web.configs and other XML files to be properly formatted?  Type: NEWLINEcleanxml C:\IHI_MAIN\trunk\[your application root]</Tip>
+  <Tip>Want to see who is logged into a particular machine? Type: Get-IHITerminalSessions</Tip>
+  <Tip>See if any users are logged into any of the SPRINGS servers, type: getout</Tip>
+  <Tip>Open IE to a particular url, type: ie [url]</Tip>
+  <Tip>See all the values on the Ihi: drive, type: ihidrive</Tip>
+  <Tip>Edit all your application's web configs in diff editors? Type: NEWLINEdifconfigs C:\IHI_MAIN\trunk\[your application root]</Tip>
+  <Tip>Open file in text editor: t [file]NEWLINENEWLINEAlso accepts pipeline input:NEWLINEdir *.txt | t</Tip>
+  <Tip>Search the repository with: search [search term]NEWLINENEWLINEAnd show the text of results with: search [search term] -ShowTextNEWLINENEWLINETo see lots more capabilities and examples: Get-Help search -Full</Tip>
+  <Tip>Open file in PowerShell editor: pse [file]NEWLINENEWLINEAlso accepts pipeline input:NEWLINEdir *.ps1 | pse</Tip>
+  <Tip>Use Invoke-IHISqlCmdFiles to create stored procedures in your databaseNEWLINEGet-Help Invoke-IHISqlCmdFiles -Full</Tip>
+  <Tip>Copy files and folders with Copy-IHIFileRoboCopyNEWLINEGet-Help Copy-IHIFileRoboCopy -Full</Tip>
+  <Tip>Send email easy: Send-IHIMailMessage recipient@ihi.org "message subject" "message body"NEWLINELots more features: Get-Help Copy-IHIFileRoboCopy -Full</Tip>
+  <Tip>Extract files from zip and other compressed file types with Expand-IHIArchive</Tip>
+  <Tip>Compare local repository copy of web.configs with copies on Production App Server type Compare-IHIProdWebConfigsLocal</Tip>
+  <Tip>Compare local repository copy of SPRINGS configs with copies on www.ihi.org type Compare-IHIProdSpringsConfigsLocal</Tip>
+  <Tip>See list of applications to build or deploy, type by itself: build</Tip>
+  <Tip>Need help with building an application?  Type: build -help</Tip>
+  <Tip>Build an application: build [application]</Tip>
+  <Tip>Build a specific version of an application: build [application] [version]</Tip>
+  <Tip>Need help with deploying an application?  Type: deploy -help</Tip>
+  <Tip>Deploy an application: deploy [application] [version] [server nickname]</Tip>
+  <Tip>See what versions of an application are deployed: version [application]</Tip>
+  <Tip>See multiple applications' version info: version [application1],[application2],...</Tip>
+  <Tip>See version information for all applications (takes awhile): version ALL</Tip>
+  <Tip>See version information in a sortable, filterable grid: version [application] -GridView</Tip>
+  <Tip>Are you a lazy typist?  Me too - so use tab completion when using build, deploy, version or apphistory.</Tip>
+  <Tip>Sublime is the best text editor, ever.</Tip>
+  <Tip>Want to know if a stored procedure is structured correctly: Test-IHIStoredProcedureStructure</Tip>
+  <Tip>Need to change your svn repository password: changepw</Tip>
+  <Tip>To see windows updates use the following cmdlet: Get-HotFix -Description Update, or winupdates</Tip>
+  <Tip>Set your credential once so you don't need to do it again within a PowerShell session: $cred = Get-IHICredential</Tip>
+  <Tip>Use SQL a lot? If you need to find the existing Server Name use: SELECT @@SERVERNAME AS 'Server Name'</Tip>
+  <Tip>Did you know PowerShell has a Lorem Ipsum cmdlet?  Type: lorem</Tip>
+  <Tip>Need to know what versions of a specific app have been installed on a server?  Type: apphistory [application] [server]</Tip>
+  <Tip>Need an excuse as to why something failed?  Try the BOFH Excuse Generator, Type: Get-Excuse or excuse</Tip>
+  <Tip>Need to reomtely login to a SharePoint machine as yourself?  Try: Enter-PSSession -ComputerName [SPADM_SERVER] -ConfigurationName SPRINGS -Authentication CredSSP -Credential (Get-IHICredential)</Tip>
+</Tips>
+<!--
+  <Tip>xxxxx</Tip>
+  <Tip>xxxxx</Tip>
+  <Tip>xxxxx</Tip>
+  <Tip>xxxxx</Tip>
+  <Tip>xxxxx</Tip>
+-->
+<!--
+To add here:
+  Get-Clipboard, other PSCX?
+  search and higlight contents
+  
+-->

@@ -1,0 +1,1 @@
+#get-childitem -recurse *.doc | Measure-Object length -ave -max -min

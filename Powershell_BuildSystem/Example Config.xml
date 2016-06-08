@@ -1,0 +1,230 @@
+﻿<Application>
+  <General>
+    <Name>EXAMPLE</Name>
+    <NotificationEmails>
+      <Email></Email> 
+    </NotificationEmails>
+  </General>
+  <BuildSettings>
+    <BuildTasks>
+      <TaskProcess>
+        <ImportVariables>
+          <VariablePair>
+            <ScriptVariable>Version</ScriptVariable>
+            <TaskProcessVariable>Version</TaskProcessVariable>
+          </VariablePair>
+          <VariablePair>
+            <ScriptVariable>ApplicationBuildRootFolderPath</ScriptVariable>
+            <TaskProcessVariable>RootFolderPath</TaskProcessVariable>
+          </VariablePair>
+          <VariablePair>
+            <ScriptVariable>LogFilePrefix</ScriptVariable>
+            <TaskProcessVariable>LogFilePrefix</TaskProcessVariable>
+          </VariablePair>
+          <VariablePair>
+            <ScriptVariable>ZipFolderPath</ScriptVariable>
+            <TaskProcessVariable>ZipFolderPath</TaskProcessVariable>
+          </VariablePair>
+        </ImportVariables>
+        <Tasks>
+          <Task>
+            <IntroMessage>"Get source code from repository"</IntroMessage>
+            <TaskSteps>
+              <TaskStep>
+                 Export-IHIRepositoryContent -Version $Version -UrlPath "/trunk/Libraries/IHI_4.6.1/Libraries" -LocalPath $(Join-Path -Path $RootFolderPath -ChildPath "Libraries\IHI_4.6.1")
+                 Export-IHIRepositoryContent -Version $Version -UrlPath "/trunk/Insight" -LocalPath $RootFolderPath
+                 Export-IHIRepositoryContent -Version $Version -UrlPath "/trunk/Common" -LocalPath $RootFolderPath
+                 Export-IHIRepositoryContent -Version $Version -UrlPath "/trunk/Database/IHI/StoredProcedures/Insight" -LocalPath $(Join-Path -Path $RootFolderPath -ChildPath "Database\StoredProcedures")
+                 Export-IHIRepositoryContent -Version $Version -UrlPath "/trunk/Database/IHI/CreateJobs/Insight" -LocalPath $(Join-Path -Path $RootFolderPath -ChildPath "Database\CreateJobs")
+              </TaskStep>
+            </TaskSteps>
+          </Task>
+          <Task>
+            <IntroMessage>"Purge files before compilation"</IntroMessage>
+            <TaskSteps>
+              <TaskStep>
+                 Remove-IHIFilesPreCompile -Path $RootFolderPath -Recursive `
+                   -LogFile ($LogFilePrefix + "_PurgeBeforeCompilation_log.txt")
+              </TaskStep>
+            </TaskSteps>
+          </Task>
+          <Task>
+            <IntroMessage>"Compile code"</IntroMessage>
+            <TaskSteps>
+              <TaskStep>
+                 Invoke-IHIMSBuild `
+                   -ProjectFilePath $(Join-Path -Path $RootFolderPath -ChildPath "Insight\UIWeb\UIWeb.csproj") `
+                   -MSBuildVersionId V40 -FrameworkVersion 4.0 `
+                   -ReferencePath $(Join-Path -Path $RootFolderPath -ChildPath "Libraries\IHI_4.6.1\Libraries") `
+                   -LogFile ($LogFilePrefix + "_MSBuildCompilation_log.txt")
+              </TaskStep>
+            </TaskSteps>
+          </Task>
+          <Task>
+            <IntroMessage>"Purge files after compilation"</IntroMessage>
+            <TaskSteps>
+              <TaskStep>
+                 Remove-IHIFilesPostCompile -Path $RootFolderPath -Recursive `
+                   -LogFile ($LogFilePrefix + "_PurgeAfterCompilation_log.txt")
+              </TaskStep>
+            </TaskSteps>
+          </Task>
+          <Task>
+            <IntroMessage>"Copy files into ZipFolder"</IntroMessage>
+            <TaskSteps>
+              <TaskStep>
+                Write-Host "Copy Web files"
+                Copy-IHIFileRoboCopy `
+                  -SourceFolderPath $(Join-Path -Path $RootFolderPath -ChildPath "Insight\UIWeb") `
+                  -DestinationPath $(Join-Path -Path $ZipFolderPath -ChildPath "Insight_wwwroot") `
+                  -FilePattern *.* -Recursive
+              </TaskStep>              
+              <TaskStep>
+                Write-Host "Copy Database files"
+                Copy-IHIFileRoboCopy `
+                  -SourceFolderPath $(Join-Path -Path $RootFolderPath -ChildPath "Database") `
+                  -DestinationPath $(Join-Path -Path $ZipFolderPath -ChildPath "Database") `
+                  -FilePattern *.* -Recursive
+              </TaskStep>
+              <TaskStep>
+                Write-Host "Copy _Config_IHI files"
+                Copy-IHIFileRoboCopy `
+                  -SourceFolderPath $(Join-Path -Path $RootFolderPath -ChildPath "Insight\_Config_IHI") `
+                  -DestinationPath $(Join-Path -Path $ZipFolderPath -ChildPath "Insight_Config_IHI") `
+                  -FilePattern *.* -Recursive
+              </TaskStep>
+            </TaskSteps>
+          </Task>
+        </Tasks>
+      </TaskProcess>
+    </BuildTasks>
+  </BuildSettings>
+  <DeploySettings>
+    <Servers>
+      <Server>
+        <Nickname></Nickname>
+        <Name></Name>
+      </Server>
+    </Servers>
+    <DeployTasks>
+      <TaskProcess>
+        <ImportVariables>
+          <VariablePair>
+            <ScriptVariable>Version</ScriptVariable>
+            <TaskProcessVariable>Version</TaskProcessVariable>
+          </VariablePair>
+          <VariablePair>
+            <ScriptVariable>EnvironmentNickname</ScriptVariable>
+            <TaskProcessVariable>EnvironmentNickname</TaskProcessVariable>
+          </VariablePair>
+          <VariablePair>
+            <ScriptVariable>ApplicationDeployRootFolder</ScriptVariable>
+            <TaskProcessVariable>RootFolderPath</TaskProcessVariable>
+          </VariablePair>
+          <VariablePair>
+            <ScriptVariable>LogFilePrefix</ScriptVariable>
+            <TaskProcessVariable>LogFilePrefix</TaskProcessVariable>
+          </VariablePair>
+        </ImportVariables>
+        <Tasks>
+          <Task>
+            <IntroMessage>"Set TaskProcess variables"</IntroMessage>
+            <TaskSteps>
+              <TaskStep>
+                Write-Host "Setting variables"
+                $script:AppCodePath                = ""
+                $script:PackageAppCodePath         = Join-Path -Path $RootFolderPath -ChildPath ""
+                $script:PackageWebConfigFolderPath = Join-Path -Path $RootFolderPath -ChildPath ("\" + $EnvironmentNickname)
+                $script:PackageDatabaseFilesPath   = Join-Path -Path $RootFolderPath -ChildPath "Database\StoredProcedures"
+                $script:PackageCreateJobFilePath    = Join-Path -Path $RootFolderPath -ChildPath "Database\CreateJobs\"
+                $script:WebServerAppPoolName       = ""
+                switch ($EnvironmentNickname) {
+                  "DEV" {
+                    $script:DatabaseServer = ""
+                    $script:DatabaseInstance = ""
+                    $script:CodeSet = "DEV"
+                  }
+                }
+              </TaskStep>
+              <TaskStep>
+                 Write-Host "TaskProcess variables:"
+                 Write-Host "  EnvironmentNickname:        $EnvironmentNickname"
+                 Write-Host "  RootFolderPath:             $RootFolderPath"
+                 Write-Host "  AppCodePath:                $AppCodePath"
+                 Write-Host "  PackageAppCodePath:         $PackageAppCodePath"
+                 Write-Host "  PackageWebConfigFolderPath: $PackageWebConfigFolderPath"
+                 Write-Host "  PackageDatabaseFilesPath:   $PackageDatabaseFilesPath"
+                 Write-Host "  DatabaseServer:             $DatabaseServer"
+                 Write-Host "  DatabaseInstance:           $DatabaseInstance"
+                 Write-Host "  WebServerAppPoolName:       $WebServerAppPoolName"
+                 Write-Host "  PackageCreateJobFilePath:   $PackageCreateJobFilePath"
+              </TaskStep>
+            </TaskSteps>
+          </Task>
+          <Task>
+            <IntroMessage>"Create AppCodePath if not found: $AppCodePath"</IntroMessage>
+            <PreConditions>
+              <Condition>$false -eq (Test-Path -Path $AppCodePath)</Condition>
+            </PreConditions>
+            <TaskSteps>
+              <TaskStep>
+                Write-Host "Creating folder: $AppCodePath"
+                New-Item -Path $AppCodePath -ItemType Directory
+              </TaskStep>
+            </TaskSteps>
+            <PostConditions>
+              <Condition>$true -eq (Test-Path -Path $AppCodePath)</Condition>
+            </PostConditions>
+          </Task>
+          <Task>
+            <IntroMessage>"Copy code files from package to application location"</IntroMessage>
+            <TaskSteps>
+              <TaskStep>
+                Copy-IHIFileRoboCopy -SourceFolderPath $PackageAppCodePath -DestinationPath $AppCodePath `
+                  -Recursive -LogFile ($LogFilePrefix + "_CopyCodeFiles_log.txt")
+              </TaskStep>
+            </TaskSteps>
+          </Task>
+          <Task>
+            <IntroMessage>"Copy configuration file to application location"</IntroMessage>
+            <TaskSteps>
+              <TaskStep>
+                Copy-IHIFileRoboCopy -SourceFolderPath $PackageWebConfigFolderPath -DestinationPath $AppCodePath `
+                  -FilePattern web.config -LogFile ($LogFilePrefix + "_CopyConfigFile_log.txt")
+              </TaskStep>
+            </TaskSteps>
+          </Task>
+          <Task>
+            <IntroMessage>"Run database SqlCmd files and restart app pool"</IntroMessage>
+            <TaskSteps>
+              <TaskStep>
+                Invoke-IHISqlCmdFiles -DatabaseServer $DatabaseServer -DatabaseInstance $DatabaseInstance `
+                  -SqlFilePath $PackageDatabaseFilesPath -LogFile ($LogFilePrefix + "_SqlCmdFiles_log.txt")
+              </TaskStep>
+              <TaskStep>
+                Restart-IHIIISWebAppPool -AppPoolName $WebServerAppPoolName
+              </TaskStep>
+            </TaskSteps>
+          </Task>
+          <Task>
+            <IntroMessage>"Run CreateJob script"</IntroMessage>
+            <TaskSteps>
+              <TaskStep>
+                $FilesParameters = @{ 
+                  Database       = $DatabaseInstance; `
+                  Version        = $Version; `
+                  Codeset        = $CodeSet; `
+                }
+                Invoke-IHISqlCmdFiles -DatabaseServer $DatabaseServer -DatabaseInstance $DatabaseInstance `
+                  -SqlFilePath $PackageCreateJobFilePath `
+                  -FileParameters $FilesParameters `
+                  -FileExtensions(".sql") `
+                  -LogFile ($LogFilePrefix + "_SqlCmdFiles_log.txt")
+              </TaskStep>
+            </TaskSteps>
+          </Task>
+        </Tasks>
+      </TaskProcess>
+    </DeployTasks>
+  </DeploySettings>
+</Application>
